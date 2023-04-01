@@ -26,9 +26,7 @@ enum layers{
 };
 
 enum custom_keycodes {
-    KC_MISSION_CONTROL = SAFE_RANGE,
-    KC_LAUNCHPAD,
-    KC_SIRI,
+    KC_SIRI = SAFE_RANGE,
     KC_KVM1,
     KC_KVM2,
     // Key Chords; keys will all be pressed, then all released
@@ -42,8 +40,6 @@ enum custom_keycodes {
     KC_CHORDS_END
 };
 
-#define KC_MCTL KC_MISSION_CONTROL
-#define KC_LPAD KC_LAUNCHPAD
 #define KC_TASK KC_TASK_VIEW
 #define KC_FLXP KC_FILE_EXPLORER
 #define KC_SNAP KC_SCREEN_SHOT
