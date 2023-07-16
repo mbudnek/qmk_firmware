@@ -159,6 +159,8 @@ void kvm_switch_to(uint8_t index, enum layers layer) {
     tap_code(KC_SCRL);
     tap_code(KC_SCRL);
     tap_code(index);
+    tap_code(KC_NUM);
+    tap_code(KC_NUM);
     keymap_config.nkro = nkro;
     default_layer_set(1 << layer);
 }
