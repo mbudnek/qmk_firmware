@@ -106,6 +106,7 @@ void matrix_scan_user(void) {
 
 static const uint8_t SCROLL_LOCK_LED_INDEX = 14;
 static const uint8_t NUM_LOCK_LED_INDEX = 37;
+static const uint8_t N_KEY_LED_INDEX = 84;
 
 bool rgb_matrix_indicators_user(void) {
     bool num_lock = host_keyboard_led_state().num_lock;
@@ -118,6 +119,9 @@ bool rgb_matrix_indicators_user(void) {
 
     if (host_keyboard_led_state().scroll_lock) {
         rgb_matrix_set_color(SCROLL_LOCK_LED_INDEX, 255, 255, 255);
+    }
+    if (!keymap_config.nkro) {
+        rgb_matrix_set_color(N_KEY_LED_INDEX, 255, 255, 255);
     }
     return true;
 }
