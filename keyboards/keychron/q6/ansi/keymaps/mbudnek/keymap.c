@@ -121,7 +121,9 @@ bool rgb_matrix_indicators_user(void) {
         rgb_matrix_set_color(SCROLL_LOCK_LED_INDEX, 255, 255, 255);
     }
     if (!keymap_config.nkro) {
-        rgb_matrix_set_color(N_KEY_LED_INDEX, 255, 255, 255);
+        if (layer_state_is(WIN_FN) || layer_state_is(MAC_FN)) {
+            rgb_matrix_set_color(N_KEY_LED_INDEX, 255, 255, 255);
+        }
     }
     return true;
 }
