@@ -94,13 +94,31 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
 // clang-format on
 
-static uint32_t time;
+void kvm_switch_to(uint8_t index, enum layers layer) {
+    bool nkro = keymap_config.nkro;
+    keymap_config.nkro = false;
+    tap_code(KC_SCRL);
+    tap_code(KC_SCRL);
+    tap_code(index);
+    tap_code(KC_NUM);
+    tap_code(KC_NUM);
+    keymap_config.nkro = nkro;
+    default_layer_set(1 << layer);
+}
+
+static uint32_t siri_timer;
+static uint32_t win_kvm_switch_timer;
 
 void matrix_scan_user(void) {
-    if (time && sync_timer_elapsed32(time) >= 500) {
-        time = 0;
+    if (siri_timer && sync_timer_elapsed32(siri_timer) >= 500) {
+        siri_timer = 0;
         unregister_code(KC_LCMD);
         unregister_code(KC_SPACE);
+    }
+
+    if (win_kvm_switch_timer && sync_timer_elapsed32(win_kvm_switch_timer) >= 500) {
+        kvm_switch_to(KC_2, MAC_BASE);
+        win_kvm_switch_timer = 0;
     }
 }
 
@@ -155,18 +173,6 @@ layer_state_t default_layer_state_set_user(layer_state_t state) {
     return state;
 }
 
-void kvm_switch_to(uint8_t index, enum layers layer) {
-    bool nkro = keymap_config.nkro;
-    keymap_config.nkro = false;
-    tap_code(KC_SCRL);
-    tap_code(KC_SCRL);
-    tap_code(index);
-    tap_code(KC_NUM);
-    tap_code(KC_NUM);
-    keymap_config.nkro = nkro;
-    default_layer_set(1 << layer);
-}
-
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     switch (keycode) {
         case KC_MISSION_CONTROL:
@@ -184,10 +190,10 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             }
             return false;  // Skip all further processing of this key
         case KC_SIRI:
-            if (record->event.pressed && time == 0) {
+            if (record->event.pressed && siri_timer == 0) {
                 register_code(KC_LCMD);
                 register_code(KC_SPACE);
-                time = sync_timer_read32();
+                siri_timer = sync_timer_read32();
             } else {
                 // Do something else when release
             }
@@ -199,7 +205,14 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             return false;
         case KC_KVM2:
             if (!record->event.pressed) {
-                kvm_switch_to(KC_2, MAC_BASE);
+                register_code(KC_LCTL);
+                register_code(KC_LALT);
+                register_code(KC_LSFT);
+                tap_code(KC_F12);
+                unregister_code(KC_LSFT);
+                unregister_code(KC_LALT);
+                unregister_code(KC_LCTL);
+                win_kvm_switch_timer = sync_timer_read32();
             }
             return false;
         case KC_CHORDS_START ... KC_CHORDS_END:
